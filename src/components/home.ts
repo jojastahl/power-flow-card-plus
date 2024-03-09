@@ -5,6 +5,7 @@ import { NewDur, TemplatesObj } from "../type";
 import { ConfigEntities, PowerFlowCardPlusConfig } from "../power-flow-card-plus-config";
 import { showLine } from "../utils/showLine";
 import { IndividualObject } from "../states/raw/individual/getIndividualObject";
+import { circleSections } from "./spans/circleSections";
 
 interface Home {
   home: any;
@@ -53,60 +54,13 @@ export const homeElement = (
     ${generalSecondarySpan(main.hass, main, templatesObj, home, "home")}
     <ha-icon .icon=${home.icon}></ha-icon>
     ${homeUsageToDisplay}
-    <svg class="home-circle-sections">
-      ${
-        homeSolarCircumference !== undefined
-          ? svg`<circle
-                class="solar"
-                cx="40"
-                cy="40"
-                r="38"
-                stroke-dasharray="${homeSolarCircumference} ${circleCircumference - homeSolarCircumference}"
-                shape-rendering="geometricPrecision"
-                stroke-dashoffset="-${circleCircumference - homeSolarCircumference}"
-              />`
-          : ""
-      }
-      ${
-        homeBatteryCircumference
-          ? svg`<circle
-                class="battery"
-                cx="40"
-                cy="40"
-                r="38"
-                stroke-dasharray="${homeBatteryCircumference} ${circleCircumference - homeBatteryCircumference}"
-                stroke-dashoffset="-${circleCircumference - homeBatteryCircumference - (homeSolarCircumference || 0)}"
-                shape-rendering="geometricPrecision"
-              />`
-          : ""
-      }
-      ${
-        homeNonFossilCircumference !== undefined
-          ? svg`<circle
-                class="low-carbon"
-                cx="40"
-                cy="40"
-                r="38"
-                stroke-dasharray="${homeNonFossilCircumference} ${circleCircumference - homeNonFossilCircumference}"
-                stroke-dashoffset="-${
-                  circleCircumference - homeNonFossilCircumference - (homeBatteryCircumference || 0) - (homeSolarCircumference || 0)
-                }"
-                shape-rendering="geometricPrecision"
-              />`
-          : ""
-      }
-      <circle
-        class="grid"
-        cx="40"
-        cy="40"
-        r="38"
-        stroke-dasharray="${homeGridCircumference ?? circleCircumference - homeSolarCircumference! - (homeBatteryCircumference || 0)} ${
-    homeGridCircumference !== undefined ? circleCircumference - homeGridCircumference : homeSolarCircumference! + (homeBatteryCircumference || 0)
-  }"
-        stroke-dashoffset="0"
-        shape-rendering="geometricPrecision"
-      />
-    </svg>
+    ${circleSections('home-circle-sections', {
+      circleCircumference,
+      solarCircumference: homeSolarCircumference,
+      batteryCircumference: homeBatteryCircumference,
+      nonFossilCircumference: homeNonFossilCircumference,
+      gridCircumference: homeGridCircumference,
+    })}
   </div>
   ${
     individual?.length > 1 && showLine(config, individual?.[1]?.state || 0)
