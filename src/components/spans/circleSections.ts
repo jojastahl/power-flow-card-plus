@@ -19,7 +19,7 @@ export const circleSections = (
     }: Circumferences
 ) => {
     return html`
-    <svg class="${clazz}">
+    <svg class="${clazz}" viewBox="0 0 80 80">
     ${
       solarCircumference !== undefined
         ? svg`<circle

@@ -1,15 +1,18 @@
 import { HomeAssistant } from "custom-card-helpers";
 import { PowerFlowCardPlusConfig } from "../../../power-flow-card-plus-config";
-import { IndividualDeviceType } from "../../../type";
+import { IndividualDeviceType, IndividualSources } from "../../../type";
 import { computeFieldIcon, computeFieldName } from "../../../utils/computeFieldAttributes";
-import { getIndividualSecondaryState, getIndividualState } from ".";
+import { getIndividualSecondaryState, getIndividualSources, getIndividualState } from ".";
 import { hasIndividualObject } from "./hasIndividualObject";
+import { Circumferences } from "../../../components/spans/circleSections";
 
 const fallbackIndividualObject: IndividualObject = {
   field: undefined,
   entity: "",
   has: false,
   state: null,
+  sources: null,
+  circumferences: null,
   displayZero: false,
   displayZeroTolerance: 0,
   icon: "",
@@ -38,6 +41,8 @@ export type IndividualObject = {
   entity: string;
   has: boolean;
   state: number | null;
+  sources: IndividualSources | null;
+  circumferences: Circumferences | null;
   displayZero: boolean;
   displayZeroTolerance: number;
   icon: string;
@@ -66,6 +71,7 @@ export const getIndividualObject = (hass: HomeAssistant, field: IndividualDevice
   if (!field || !field?.entity) return fallbackIndividualObject;
   const entity = field.entity;
   const state = getIndividualState(hass, field);
+  const sources = getIndividualSources(hass, field);
   const displayZero = field?.display_zero || false;
   const displayZeroTolerance = field?.display_zero_tolerance || 0;
   const has = hasIndividualObject(displayZero, state, displayZeroTolerance);
@@ -79,6 +85,8 @@ export const getIndividualObject = (hass: HomeAssistant, field: IndividualDevice
     entity,
     has,
     state,
+    sources,
+    circumferences: null,
     displayZero,
     displayZeroTolerance,
     icon: computeFieldIcon(hass, field, "mdi:flash"),

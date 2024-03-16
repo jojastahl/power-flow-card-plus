@@ -230,6 +230,11 @@ export const styles = css`
     top: 0;
     left: 0;
   }
+  .circle svg.individual-circle-sections {
+    padding: 1px;
+    width: calc(100% - 2px);
+    height: calc(100% - 2px);
+  }
 
   span.secondary-info {
     color: var(--primary-text-color);
@@ -557,7 +562,7 @@ export const styles = css`
     text-decoration: none;
   }
 
-  .home-circle-sections {
+  .home-circle-sections, .individual-circle-sections {
     pointer-events: none;
   }
 `;

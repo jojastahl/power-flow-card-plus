@@ -8,18 +8,20 @@ import { IndividualObject } from "../states/raw/individual/getIndividualObject";
 import { PowerFlowCardPlus } from "../power-flow-card-plus";
 import { styleLine } from "../utils/styleLine";
 import { checkShouldShowDots } from "../utils/checkShouldShowDots";
+import { Circumferences, circleSections } from "./spans/circleSections";
 
 interface TopIndividual {
   newDur: NewDur;
   templatesObj: TemplatesObj;
   individualObj?: IndividualObject;
   displayState: string;
+  circumferences?: Circumferences;
 }
 
 export const individualLeftTopElement = (
   main: PowerFlowCardPlus,
   config: PowerFlowCardPlusConfig,
-  { individualObj, templatesObj, displayState, newDur }: TopIndividual
+  { individualObj, templatesObj, displayState, newDur, circumferences }: TopIndividual
 ) => {
   if (!individualObj) return html`<div class="spacer"></div>`;
   const indexOfIndividual = config?.entities?.individual?.findIndex((e) => e.entity === individualObj.entity) || 0;
@@ -46,6 +48,7 @@ export const individualLeftTopElement = (
               : ""}${displayState}
           </span>`
         : ""}
+      ${circumferences ? circleSections("individual-circle-sections", circumferences) : ""}
     </div>
     ${showLine(config, individualObj.state || 0)
       ? html`

@@ -9,19 +9,21 @@ import { individualSecondarySpan } from "./spans/individualSecondarySpan";
 import { HomeAssistant } from "custom-card-helpers";
 import { computeIndividualFlowRate } from "../utils/computeFlowRate";
 import { checkShouldShowDots } from "../utils/checkShouldShowDots";
+import { Circumferences, circleSections } from "./spans/circleSections";
 
 interface IndividualBottom {
   newDur: NewDur;
   templatesObj: TemplatesObj;
   individualObj?: IndividualObject;
   displayState: string;
+  circumferences?: Circumferences;
 }
 
 export const individualLeftBottomElement = (
   main: PowerFlowCardPlus,
   hass: HomeAssistant,
   config: PowerFlowCardPlusConfig,
-  { individualObj, templatesObj, displayState, newDur }: IndividualBottom
+  { individualObj, templatesObj, displayState, newDur, circumferences }: IndividualBottom
 ) => {
   if (!individualObj) return html`<div class="spacer"></div>`;
   const indexOfIndividual = config?.entities?.individual?.findIndex((e) => e.entity === individualObj.entity) || 0;
@@ -74,6 +76,7 @@ export const individualLeftBottomElement = (
               : ""}${displayState}
           </span>`
         : ""}
+      ${circumferences ? circleSections("individual-circle-sections", circumferences) : ""}
     </div>
     <span class="label">${individualObj?.name}</span>
   </div> `;

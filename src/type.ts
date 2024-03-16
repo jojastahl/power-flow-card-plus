@@ -40,6 +40,8 @@ export type GridPowerOutage = {
   entity_generator?: string;
 };
 
+export const IndividualSourceProperties = ["solar_usage_entity", "battery_usage_entity", "fossil_usage_entity", "grid_usage_entity"] as const;
+
 export type IndividualDeviceType = BaseConfigEntity & {
   entity: string;
   color?: string;
@@ -53,6 +55,8 @@ export type IndividualDeviceType = BaseConfigEntity & {
   use_metadata?: boolean;
   decimals?: number;
   show_direction?: boolean;
+} & {
+  [key in typeof IndividualSourceProperties[number]]: string;
 };
 
 export type EntityType = "battery" | "grid" | "solar" | "individual1" | "individual2" | "home" | "fossil_fuel_percentage";
@@ -81,6 +85,29 @@ export type HomeSources = {
   gridNonFossil: {
     value: number;
     color: string;
+  };
+};
+
+export type IndividualSources = {
+  battery?: {
+    value: number | null;
+    color: string;
+    isPercentage: boolean;
+  };
+  solar?: {
+    value: number | null;
+    color: string;
+    isPercentage: boolean;
+  };
+  grid?: {
+    value: number | null;
+    color: string;
+    isPercentage: boolean;
+  };
+  gridNonFossil?: {
+    value: number | null;
+    color: string;
+    isPercentage: boolean;
   };
 };
 

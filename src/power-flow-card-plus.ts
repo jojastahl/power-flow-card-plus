@@ -22,7 +22,7 @@ import { computeFieldIcon, computeFieldName } from "./utils/computeFieldAttribut
 import { adjustZeroTolerance } from "./states/tolerance/base";
 import { getNonFossilHas, getNonFossilHasPercentage, getNonFossilSecondaryState } from "./states/raw/nonFossil";
 import { getHomeSecondaryState } from "./states/raw/home";
-import { GridObject, HomeSources, NewDur, TemplatesObj } from "./type";
+import { GridObject, HomeSources, IndividualSources, NewDur, TemplatesObj } from "./type";
 import { displayValue, getDisplayValueOptions } from "./utils/displayValue";
 import { allDynamicStyles } from "./style/all";
 import { nonFossilElement } from "./components/nonFossil";
@@ -45,6 +45,7 @@ import {
 } from "./utils/computeIndividualPosition";
 import { individualRightTopElement } from "./components/individualRightTopElement";
 import { individualRightBottomElement } from "./components/individualRightBottomElement";
+import { Circumferences } from "./components/spans/circleSections";
 
 const circleCircumference = 238.76104;
 
@@ -386,6 +387,31 @@ export class PowerFlowCardPlus extends LitElement {
       circleCircumference *
       ((totalHomeConsumption - (nonFossil.state.power ?? 0) - (battery.state.toHome ?? 0) - (solar.state.toHome ?? 0)) / totalHomeConsumption);
 
+    individualObjs.forEach(individual => {
+      if (!individual.sources) {
+        individual.circumferences = null;
+        return;
+      }
+      const total = individual.state ?? 0;
+      const toWatts = (source: IndividualSources["solar"]) => {
+        if (!source)
+          return null;
+        return source.isPercentage ? total * (source.value ?? 0) : (source.value ?? 0);
+      };
+      const toCircumference = (watts: number | null) => watts === null ? undefined : (total === 0 ? 0 : circleCircumference * watts / total);
+      const solar = toWatts(individual.sources.solar);
+      const battery = toWatts(individual.sources.battery);
+      const nonFossil = toWatts(individual.sources.gridNonFossil);
+      const grid = toWatts(individual.sources.grid);
+      individual.circumferences = {
+        circleCircumference,
+        solarCircumference: toCircumference(solar),
+        batteryCircumference: toCircumference(battery),
+        nonFossilCircumference: toCircumference(nonFossil),
+        gridCircumference: toCircumference(grid),
+      }
+    });
+
     const homeDisplayValueOptions = getDisplayValueOptions(this._config, entities.home);
     const homeUsageToDisplay =
       entities.home?.override_state && entities.home.entity
@@ -535,6 +561,7 @@ export class PowerFlowCardPlus extends LitElement {
                       displayState: getIndividualDisplayState(individualFieldLeftTop),
                       newDur,
                       templatesObj,
+                      circumferences: individualFieldLeftTop?.circumferences ?? undefined,
                     })
                   : html`<div class="spacer"></div>`}
                 ${checkHasRightIndividual(this._config, individualObjs)
@@ -545,6 +572,7 @@ export class PowerFlowCardPlus extends LitElement {
                       templatesObj,
                       battery,
                       individualObjs,
+                      circumferences: individualFieldRightTop?.circumferences ?? undefined,
                     })
                   : html``}
               </div>`
@@ -585,6 +613,7 @@ export class PowerFlowCardPlus extends LitElement {
                       individualObj: individualFieldLeftBottom,
                       newDur,
                       templatesObj,
+                      circumferences: individualFieldLeftBottom?.circumferences ?? undefined,
                     })
                   : html`<div class="spacer"></div>`}
                 ${checkHasRightIndividual(this._config, individualObjs)
@@ -595,6 +624,7 @@ export class PowerFlowCardPlus extends LitElement {
                       templatesObj,
                       battery,
                       individualObjs,
+                      circumferences: individualFieldRightBottom?.circumferences ?? undefined,
                     })
                   : html``}
               </div>`
