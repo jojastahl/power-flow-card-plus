@@ -398,7 +398,7 @@ export class PowerFlowCardPlus extends LitElement {
           return null;
         return source.isPercentage ? total * (source.value ?? 0) : (source.value ?? 0);
       };
-      const toCircumference = (watts: number | null) => watts === null ? undefined : (total === 0 ? 0 : circleCircumference * watts / total);
+      const toCircumference = (watts: number | null) => watts === null ? undefined : (total === 0 ? 0 : Math.min(circleCircumference, circleCircumference * watts / total));
       const solar = toWatts(individual.sources.solar);
       const battery = toWatts(individual.sources.battery);
       const nonFossil = toWatts(individual.sources.gridNonFossil);
